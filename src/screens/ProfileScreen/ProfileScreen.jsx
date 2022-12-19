@@ -4,7 +4,10 @@ import {Vector} from '../../assests/Icons';
 import Colors from '../../theme/Colors';
 import {CustomButton} from '../../components';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({navigation}) {
+  const handleLogOut = () => {
+    navigation.navigate('LoginScreen');
+  };
   return (
     <View style={styles.container}>
       <View style={styles.vector}>
@@ -17,6 +20,7 @@ export default function ProfileScreen() {
           title="Log out"
           containerStyle={styles.buttonContainer}
           titleStyle={styles.buttonTitle}
+          action={handleLogOut}
         />
       </View>
     </View>

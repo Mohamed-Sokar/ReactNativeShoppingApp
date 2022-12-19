@@ -19,7 +19,15 @@ const Title = () => {
   );
 };
 
-export default function RegisterScreen() {
+export default function RegisterScreen({navigation}) {
+  const handleSignUp = () => {
+    navigation.navigate('HomeStack');
+  };
+
+  const handleSignIn = () => {
+    navigation.navigate('LoginScreen');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.titleWrapper}>
@@ -49,12 +57,12 @@ export default function RegisterScreen() {
           <PasswordField title="Confirm Password" />
         </View>
         <View style={styles.buttonWrapper}>
-          <CustomButton title="Sign Up" />
+          <CustomButton title="Sign Up" action={handleSignUp} />
         </View>
       </View>
       <View style={styles.noteWrapper}>
         <Text style={styles.text11}>Already have an account?</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleSignIn}>
           <Text style={styles.text22}> Sign In</Text>
         </TouchableOpacity>
       </View>

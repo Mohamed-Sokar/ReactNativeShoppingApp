@@ -4,7 +4,10 @@ import Colors from '../../theme/Colors';
 import {Cart} from '../../assests/Icons';
 import {CustomButton} from '../../components';
 
-export default function SplashScreen() {
+export default function SplashScreen({navigation}) {
+  const handleGetStarted = () => {
+    navigation.navigate('LoginScreen');
+  };
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
@@ -15,6 +18,7 @@ export default function SplashScreen() {
         title="Get started"
         containerStyle={styles.button}
         titleStyle={styles.buttonTitle}
+        action={handleGetStarted}
       />
     </View>
   );

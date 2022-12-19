@@ -16,7 +16,13 @@ const Title = () => {
   );
 };
 
-export default function LoginScreen() {
+export default function LoginScreen({navigation}) {
+  const handleLogin = () => {
+    navigation.navigate('HomeStack');
+  };
+  const handleSignUp = () => {
+    navigation.navigate('RegisterScreen');
+  };
   return (
     <View style={styles.container}>
       <View style={styles.titleWrapper}>
@@ -33,12 +39,12 @@ export default function LoginScreen() {
           <PasswordField title="Password" />
         </View>
         <View style={styles.buttonWrapper}>
-          <CustomButton title="Sign In" />
+          <CustomButton title="Sign In" action={handleLogin} />
         </View>
       </View>
       <View style={styles.noteWrapper}>
         <Text style={styles.text11}>Don’t have an account?</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleSignUp}>
           <Text style={styles.text22}> Sign Up</Text>
         </TouchableOpacity>
       </View>
