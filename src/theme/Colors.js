@@ -6,7 +6,7 @@ const Colors = {
   gray: {
     dark: '#172331',
     light: '#8C8FA5',
-    bg: '#F3F4F8',
+    bg: '#e0e0eb',
   },
   common: {
     black: '#000000',

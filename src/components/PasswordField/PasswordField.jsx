@@ -10,7 +10,14 @@ import React from 'react';
 import {Lock} from '../../assests/Icons';
 import Icon from 'react-native-vector-icons/AntDesign';
 
-export default function PasswordField({title}) {
+export default function PasswordField({
+  title,
+  onChangeText,
+  onBlur,
+  value,
+  error,
+  passwordRef,
+}) {
   const [visible, setVisible] = React.useState(true);
   const toggleVisibelity = () => {
     setVisible(!visible);
@@ -28,6 +35,11 @@ export default function PasswordField({title}) {
             keyboardType="default"
             style={styles.input}
             secureTextEntry={visible}
+            onChangeText={onChangeText}
+            onBlur={onBlur}
+            value={value}
+            error={error}
+            ref={passwordRef}
           />
         </View>
         <TouchableOpacity onPress={toggleVisibelity} style={styles.rightIcon}>

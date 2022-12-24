@@ -1,4 +1,9 @@
-import {Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import React from 'react';
 import Colors from '../../theme/Colors';
 
@@ -7,13 +12,19 @@ export default function CustomButton({
   containerStyle,
   titleStyle,
   action,
+  ...rest
 }) {
   return (
     <TouchableOpacity
       style={[styles.container, containerStyle]}
       activeOpacity={0.6}
       onPress={action}>
-      <Text style={[styles.title, titleStyle]}>{title}</Text>
+      {rest.loading ? (
+        <ActivityIndicator size="small" color={Colors.common.white} />
+      ) : (
+        <Text style={[styles.title, titleStyle]}>{title}</Text>
+      )}
+      {/* <Text style={[styles.title, titleStyle]}>{title}</Text> */}
     </TouchableOpacity>
   );
 }

@@ -1,25 +1,29 @@
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
 import React from 'react';
 import {ProductImage, Close, Star} from '../../../assests/Icons';
 import {CustomButton} from '../../../components';
 import Colors from '../../../theme/Colors';
 
-export default function Product() {
+export default function Product({item}) {
   return (
     <View style={styles.productContainer}>
       <View style={styles.imageWrapper}>
-        <ProductImage />
+        <Image source={{uri: item.image}} style={{width: 65, height: 100}} />
       </View>
       <View style={styles.productContentWrapper}>
         <View style={styles.descWrapper}>
-          <Text style={styles.title}>Fjallraven - Foldsack...</Text>
+          <Text numberOfLines={1} style={styles.title}>
+            {item.title}
+          </Text>
           <View style={[styles.evaluationWrapper, {flexDirection: 'row'}]}>
             <Star />
-            <Text style={[styles.title, {fontSize: 12}]}>3.9</Text>
+            <Text style={[{fontSize: 12, fontWeight: '700', color: 'black'}]}>
+              {item.rating.rate}
+            </Text>
           </View>
         </View>
-        <Text style={styles.descText1}>Men's Clothing</Text>
-        <Text style={styles.descText2}>100.95$</Text>
+        <Text style={styles.descText1}>{item.category}</Text>
+        <Text style={styles.descText2}>{item.price}</Text>
       </View>
     </View>
   );
@@ -52,6 +56,8 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 16,
     fontWeight: '600',
+    width: 200,
+    // backgroundColor: 'red',
   },
   evaluationWrapper: {
     flexDirection: 'row',

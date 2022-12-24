@@ -2,48 +2,73 @@ import {View, Text, StyleSheet} from 'react-native';
 import React from 'react';
 import Product from './Component/Product';
 import Colors from '../../theme/Colors';
-import {CustomButton} from '../../components';
+import {CustomButton, NavigationHeader} from '../../components';
+import {Context} from '../../context/context';
 
-export default function ProductDetailsScreen() {
+export default function ProductDetailsScreen({navigation, route}) {
+  const {product} = route.params;
+  const [quantity, setQuantity] = React.useState(1);
+  const {Cart, setCart, Total, setTotal} = React.useContext(Context);
+
+  const handleQuantity = type => {
+    if (type === 'add') {
+      setQuantity(quantity + 1);
+    } else {
+      quantity > 1 && setQuantity(quantity - 1);
+    }
+  };
+
+  const handleAddToCart = () => {
+    const item = {
+      ...product,
+      quantity,
+      totalPrice: product.price * quantity,
+      id: Math.random().toString(),
+    };
+    setCart([...Cart, item]);
+    setTotal(Total + item.totalPrice);
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={{padding: 30}}>
-        <Product />
-      </View>
-      <View style={styles.infoWrapper}>
-        <Text style={styles.grayBold}>Product Name</Text>
-        <Text numberOfLines={2} style={styles.descText}>
-          Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops
-        </Text>
-        <View style={styles.descWrapper}>
-          <Text style={styles.grayBold}>Product Description</Text>
-          <Text style={styles.descText}>
-            Slim-fitting style, contrast raglan long sleeve, three-button henley
-            placket, light weight & soft fabric for breathable and comfortable
-            wearing. And Solid stitched shirts with round neck made for
-            durability and a great fit for casual fashion wear and diehard
-            baseball fans. The Henley style round neckline includes a
-            three-button placket. Slim-fitting style, contrast raglan long
-            sleeve, three-button henley placket, light weight & soft fabric for
-            breathable and comfortable wearing. And Solid stitched shirts with
-            round neck made for durability and a great fit for casual fashion
-            wear and diehard baseball fans. The Henley style round neckline
-            includes a three-button placket. Slim-fitting style, contrast raglan
-            long sleeve, three-button henley placket, light weight & soft fabric
-            for breathable and comfortable wearing.
+    <>
+      <NavigationHeader action={navigation.goBack} title={product.title} />
+      <View style={styles.container}>
+        <View style={{padding: 30}}>
+          <Product item={product} />
+        </View>
+        <View style={styles.infoWrapper}>
+          <Text style={styles.grayBold}>Product Name</Text>
+          <Text numberOfLines={2} style={styles.descText}>
+            {product.title}
           </Text>
-        </View>
-        <View style={styles.quantityWrapper}>
-          <Text style={styles.grayBold}>Product Quantity</Text>
-          <View style={styles.buttonsWrapper}>
-            <CustomButton title="-" containerStyle={styles.btn1Container} />
-            <Text>5</Text>
-            <CustomButton title="+" containerStyle={styles.btn2Container} />
+          <View style={styles.descWrapper}>
+            <Text style={styles.grayBold}>Product Description</Text>
+            <Text style={styles.descText}>{product.description}</Text>
           </View>
+          <View style={styles.quantityWrapper}>
+            <Text style={styles.grayBold}>Product Quantity</Text>
+            <View style={styles.buttonsWrapper}>
+              <CustomButton
+                title="-"
+                containerStyle={styles.btn1Container}
+                action={() => handleQuantity('sub')}
+              />
+              <Text>{quantity}</Text>
+              <CustomButton
+                title="+"
+                containerStyle={styles.btn2Container}
+                action={() => handleQuantity('add')}
+              />
+            </View>
+          </View>
+          <CustomButton
+            title="Add to Cart"
+            containerStyle={styles.btnWrapper}
+            action={handleAddToCart}
+          />
         </View>
-        <CustomButton title="Add to Cart" containerStyle={styles.btnWrapper} />
       </View>
-    </View>
+    </>
   );
 }
 

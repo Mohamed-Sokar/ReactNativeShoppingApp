@@ -3,23 +3,40 @@ import React from 'react';
 import Colors from '../../theme/Colors';
 import {Cart} from '../../assests/Icons';
 import {CustomButton} from '../../components';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SplashScreen({navigation}) {
+  const [token, setToken] = React.useState(true);
+
   const handleGetStarted = () => {
     navigation.navigate('LoginScreen');
   };
+
+  React.useEffect(() => {
+    AsyncStorage.getItem('token').then(token => {
+      if (token) {
+        setToken(true);
+        navigation.navigate('HomeStack');
+      } else {
+        setToken(false);
+      }
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
         <Cart />
         <Text style={styles.title}>Shopping App</Text>
       </View>
-      <CustomButton
-        title="Get started"
-        containerStyle={styles.button}
-        titleStyle={styles.buttonTitle}
-        action={handleGetStarted}
-      />
+      {token ? null : (
+        <CustomButton
+          title="Get started"
+          containerStyle={styles.button}
+          titleStyle={styles.buttonTitle}
+          action={handleGetStarted}
+        />
+      )}
     </View>
   );
 }

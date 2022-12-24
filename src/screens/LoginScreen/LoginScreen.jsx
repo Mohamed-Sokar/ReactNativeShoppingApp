@@ -1,8 +1,12 @@
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import Colors from '../../theme/Colors';
-import React from 'react';
+import React, {useRef} from 'react';
 import {InputField, PasswordField, CustomButton} from '../../components';
-import {User} from '../../assests/Icons';
+import {UserIcon} from '../../assests/Icons';
+import {Formik} from 'formik';
+import * as yup from 'yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Context} from '../../context/context';
 
 const Title = () => {
   return (
@@ -17,38 +21,115 @@ const Title = () => {
 };
 
 export default function LoginScreen({navigation}) {
-  const handleLogin = () => {
-    navigation.navigate('HomeStack');
+  const [loading, setLoading] = React.useState(false);
+  const {setUser, User} = React.useContext(Context);
+
+  const handleLogin = (username, password) => {
+    setLoading(true);
+    fetch('https://fakestoreapi.com/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: username,
+        // password: password,
+        // username: 'johnd',
+        password: 'm38rmF$',
+      }),
+      headers: {
+        'Content-type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        AsyncStorage.setItem('username', username);
+        AsyncStorage.setItem('token', json.token).then(() => {
+          Alert.alert('Login Success');
+          navigation.navigate('HomeStack');
+        });
+      })
+      .catch(err =>
+        Alert.alert(
+          'Error',
+          'username or password is incorrect !! plesae try again',
+        ),
+      )
+      .finally(() => {
+        setLoading(false);
+      });
   };
   const handleSignUp = () => {
     navigation.navigate('RegisterScreen');
   };
+
+  const loginValidationSchema = yup.object().shape({
+    username: yup
+      .string()
+      .required('Username is Required')
+      .min(3, ({min}) => `Username must be at least ${min} characters`),
+
+    password: yup
+      .string()
+      .min(6, ({min}) => `Password must be at least ${min} characters`)
+      .required('Password is required'),
+  });
+
+  const username = useRef();
+  const password = useRef();
+
   return (
-    <View style={styles.container}>
-      <View style={styles.titleWrapper}>
-        <Title />
-      </View>
-      <View style={styles.formContainer}>
-        <InputField
-          leftIcon={<User />}
-          placeholder="mohamed sokar"
-          title="Username"
-          keyboardType={'default'}
-        />
-        <View style={styles.PasswordWrapper}>
-          <PasswordField title="Password" />
+    <Formik
+      // validationSchema={loginValidationSchema}
+      initialValues={{username: '', password: ''}}
+      onSubmit={values => {
+        handleLogin(values.username, values.password);
+      }}>
+      {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
+        <View style={styles.container}>
+          <View style={styles.titleWrapper}>
+            <Title />
+          </View>
+          <View style={styles.formContainer}>
+            <InputField
+              leftIcon={<UserIcon />}
+              placeholder="mohamed sokar"
+              title="Username"
+              keyboardType={'default'}
+              onChangeText={handleChange('username')}
+              onBlur={handleBlur('username')}
+              value={values.username}
+              usernameRef={username}
+            />
+            {errors.username && touched.username && (
+              <Text style={styles.errorMessage}>{errors.username}</Text>
+            )}
+            <View style={styles.PasswordWrapper}>
+              <PasswordField
+                title="Password"
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
+                value={values.password}
+                passwordRef={password}
+              />
+              {errors.password && touched.password && (
+                <Text style={styles.errorMessage}>{errors.password}</Text>
+              )}
+            </View>
+            <View style={styles.buttonWrapper}>
+              <CustomButton
+                title="Sign In"
+                action={handleSubmit}
+                loading={loading}
+              />
+            </View>
+          </View>
+          <View style={styles.noteWrapper}>
+            <Text style={styles.text11}>Don’t have an account?</Text>
+            <TouchableOpacity onPress={handleSignUp}>
+              <Text style={styles.text22}> Sign Up</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.buttonWrapper}>
-          <CustomButton title="Sign In" action={handleLogin} />
-        </View>
-      </View>
-      <View style={styles.noteWrapper}>
-        <Text style={styles.text11}>Don’t have an account?</Text>
-        <TouchableOpacity onPress={handleSignUp}>
-          <Text style={styles.text22}> Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      )}
+    </Formik>
   );
 }
 
@@ -59,13 +140,10 @@ const styles = StyleSheet.create({
   },
   titleWrapper: {
     flex: 0.3,
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
   formContainer: {
     flex: 0.5,
   },
-  title: {},
   text1: {
     color: Colors.primary.dark,
     fontWeight: '700',
@@ -102,5 +180,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 15,
     textAlign: 'center',
+  },
+  errorMessage: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: 'red',
+    marginLeft: 10,
+    marginTop: 3,
   },
 });

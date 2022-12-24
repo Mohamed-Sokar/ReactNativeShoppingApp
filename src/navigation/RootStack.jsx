@@ -1,10 +1,13 @@
 import StartStack from './StartStack';
 import {NavigationContainer} from '@react-navigation/native';
+import {Provider} from '../context/context';
 
 export default function RootStack() {
   return (
-    <NavigationContainer>
-      <StartStack />
-    </NavigationContainer>
+    <Provider>
+      <NavigationContainer>
+        <StartStack />
+      </NavigationContainer>
+    </Provider>
   );
 }

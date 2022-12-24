@@ -2,10 +2,13 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 import Colors from '../../../theme/Colors';
 
-export default function Catagory({number}) {
+export default function Catagory({catagoryName, action}) {
   return (
-    <TouchableOpacity activeOpacity={0.5} style={styles.container}>
-      <Text style={styles.text}>Catagory {number}</Text>
+    <TouchableOpacity
+      onPress={action}
+      activeOpacity={0.5}
+      style={styles.container}>
+      <Text style={styles.text}>{catagoryName}</Text>
     </TouchableOpacity>
   );
 }
@@ -15,7 +18,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     backgroundColor: Colors.common.white,
-    height: 100,
+    height: 95,
     width: 100,
     marginRight: 14,
     shadowColor: 'rgba(0, 0, 0, 0.25)',

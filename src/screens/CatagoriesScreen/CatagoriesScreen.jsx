@@ -1,26 +1,75 @@
-import {View, Text, StyleSheet, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import React from 'react';
 import Colors from '../../theme/Colors';
+import {Context} from '../../context/context';
+import {NavigationHeader} from '../../components';
+const Catagory = ({catagoryName, action}) => {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.5}
+      style={styles.catagoryWrapper}
+      onPress={action}>
+      <Text style={styles.text}>{catagoryName}</Text>
+    </TouchableOpacity>
+  );
+};
 
-export default function CatagoriesScreen() {
-  const Catagory = () => {
-    return (
-      <View style={styles.catagoryWrapper}>
-        <Text style={styles.text}>Electronics</Text>
-      </View>
-    );
+export default function CatagoriesScreen({navigation}) {
+  const {Catagories, setCatagories} = React.useContext(Context);
+
+  const navigateToProductsScreen = catagoryName => {
+    navigation.navigate('ProductsScreen', {catagoryName});
   };
 
+  const getAllCatagories = () => {
+    fetch(`https://fakestoreapi.com/products/categories`, {
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        setCatagories(json);
+      })
+      .catch(err =>
+        Alert.alert(err, 'something went wrong, please try again later'),
+      );
+  };
+  React.useEffect(() => {
+    getAllCatagories();
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
-        renderItem={({item}) => <Catagory number={item} />}
-        keyExtractor={item => item}
-        numColumns={2}
-        contentContainerStyle={styles.flatList}
-      />
-    </View>
+    <>
+      <NavigationHeader action={navigation.goBack} title="Categories" />
+
+      <View style={styles.container}>
+        {Catagories.length === 0 ? (
+          <ActivityIndicator size="large" color={Colors.common.black} />
+        ) : (
+          <FlatList
+            data={Catagories}
+            renderItem={({item}) => (
+              <Catagory
+                catagoryName={item}
+                action={navigateToProductsScreen.bind(this, item)}
+              />
+            )}
+            keyExtractor={item => item}
+            numColumns={2}
+            contentContainerStyle={styles.flatList}
+          />
+        )}
+      </View>
+    </>
   );
 }
 
@@ -47,7 +96,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   text: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '500',
     color: Colors.common.black,
   },

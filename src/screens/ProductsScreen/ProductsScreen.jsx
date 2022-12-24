@@ -1,43 +1,126 @@
-import {View, Text, StyleSheet, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  Image,
+} from 'react-native';
 import React from 'react';
-import {ProductImage, Star} from '../../assests/Icons';
-import {CustomButton} from '../../components';
+import {Star} from '../../assests/Icons';
+import {CustomButton, NavigationHeader} from '../../components';
 import Colors from '../../theme/Colors';
+import {Context} from '../../context/context';
 
-export default function ProductsScreen() {
-  const Product = () => {
-    return (
-      <View style={styles.productContainer}>
-        <ProductImage />
-        <Text style={styles.title}>Fjallraven - Fold...</Text>
-        <Text style={styles.desc}>Men's Clothing</Text>
-        <View style={styles.priceAnEevaluationWrapper}>
-          <Text style={styles.price}>109.95$</Text>
-          <View style={styles.star}>
-            <Star />
-          </View>
-          <Text style={styles.evaluation}>3.9</Text>
+const Product = ({item, action}) => {
+  return (
+    <View style={styles.productContainer}>
+      <Image source={{uri: item.image}} style={styles.image} />
+      <Text numberOfLines={1} style={styles.title}>
+        {item.title}
+      </Text>
+      <Text style={styles.desc}>{item.category}</Text>
+      <View style={styles.priceAnEevaluationWrapper}>
+        <Text style={styles.price}>{item.price} $</Text>
+        <View style={styles.rating}>
+          <Star />
+          <Text style={styles.evaluation}>{item.rating.rate}</Text>
         </View>
-        <CustomButton
-          title="Buy Now"
-          containerStyle={styles.buttonContainer}
-          titleStyle={styles.buttonTitle}
-        />
       </View>
-    );
+      <CustomButton
+        title="Buy Now"
+        containerStyle={styles.buttonContainer}
+        titleStyle={styles.buttonTitle}
+        action={action}
+      />
+    </View>
+  );
+};
+
+export default function ProductsScreen({route, navigation}) {
+  const {catagoryName} = route.params;
+  const [loading, setLoading] = React.useState(false);
+
+  const {Products, setProducts} = React.useContext(Context);
+
+  const getAllProducts = () => {
+    fetch(`https://fakestoreapi.com/products`, {
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        setProducts(json);
+      })
+      .catch(err =>
+        Alert.alert(err, 'something went wrong, please try again later'),
+      )
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const getProductsWithCatagoryName = catagoryName => {
+    fetch(`https://fakestoreapi.com/products/category/${catagoryName}`, {
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        setProducts(json);
+      })
+      .catch(err =>
+        Alert.alert('Error', 'something went wrong, please try again later'),
+      )
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  React.useEffect(() => {
+    setLoading(true);
+    if (catagoryName == 'All') {
+      Products ? getAllProducts() : null;
+    } else {
+      Products ? getProductsWithCatagoryName(catagoryName) : null;
+    }
+  }, [catagoryName]);
+
+  const navigateToProductDetailsScreen = product => {
+    navigation.navigate('ProductDetailsScreen', {product});
   };
 
   return (
-    <View style={styles.container}>
-      {/* <Product /> */}
-      <FlatList
-        data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
-        renderItem={({item}) => <Product number={item} />}
-        keyExtractor={item => item}
-        numColumns={2}
-        contentContainerStyle={styles.flatList}
-      />
-    </View>
+    <>
+      <NavigationHeader action={navigation.goBack} title="Products" />
+      <View style={styles.container}>
+        {loading ? (
+          <View style={{marginTop: '100%'}}>
+            <ActivityIndicator size="large" color={Colors.primary.main} />
+          </View>
+        ) : (
+          <View style={styles.flatListWrapper}>
+            <FlatList
+              data={Products}
+              renderItem={({item}) => (
+                <Product
+                  item={item}
+                  action={navigateToProductDetailsScreen.bind(this, item)}
+                />
+              )}
+              keyExtractor={item => item.id}
+              numColumns={2}
+              contentContainerStyle={styles.flatList}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+        )}
+      </View>
+    </>
   );
 }
 
@@ -56,6 +139,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 5,
   },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 20,
+  },
   title: {
     fontSize: 15,
     color: Colors.common.black,
@@ -69,19 +157,24 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   priceAnEevaluationWrapper: {
+    flex: 1,
     flexDirection: 'row',
     marginTop: 7,
-    width: '70%',
+    width: '75%',
     justifyContent: 'space-between',
   },
-  star: {
-    marginRight: -10,
-    marginTop: 2,
-  },
   price: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 14,
+    fontWeight: '700',
     color: Colors.gray.dark,
+    flex: 0.6,
+  },
+  rating: {
+    flexDirection: 'row',
+    flex: 0.35,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: 30,
   },
   evaluation: {
     fontSize: 12,
@@ -98,10 +191,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
+  flatListWrapper: {
+    flex: 0.93,
+    height: '50%',
+  },
   flatList: {
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    // backgroundColor: 'red',
   },
 });

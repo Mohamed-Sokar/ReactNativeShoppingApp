@@ -1,33 +1,37 @@
 import {View, Text, StyleSheet, Image} from 'react-native';
 import Colors from '../../../theme/Colors';
 import React from 'react';
-import {ProductImage, Star} from '../../../assests/Icons';
+import {Star} from '../../../assests/Icons';
 import {CustomButton} from '../../../components';
 
-export default function Product() {
+export default function Product({item, action}) {
   return (
     <View style={styles.container}>
       <View style={styles.firstPartWrapper}>
-        <ProductImage />
-        {/* <Image source={require()}/> */}
+        <Image source={{uri: item.image}} style={styles.image} />
       </View>
       <View style={styles.secondPartWrapper}>
-        <Text style={styles.secondPartFirstText}>Fjallraven - Foldsack...</Text>
-        <Text style={styles.secondPartSecondText}>Men's Clothing</Text>
-        <Text style={styles.secondPartThirdText}>109.95$</Text>
+        <Text numberOfLines={1} style={styles.secondPartFirstText}>
+          {item.title || 'title not found'}
+        </Text>
+        <Text style={styles.secondPartSecondText}>{item.category}</Text>
+        <Text style={styles.secondPartThirdText}>{item.price} $</Text>
       </View>
       <View style={styles.thirdPartWrapper}>
         <View style={styles.evaluation}>
           <View style={styles.star}>
             <Star />
           </View>
-          <Text>3.9</Text>
+          <Text style={{fontSize: 13, fontWeight: '700', color: 'black'}}>
+            {item.rating.rate}
+          </Text>
         </View>
         <View>
           <CustomButton
             title="Buy Now"
             containerStyle={styles.buttonContainer}
             titleStyle={styles.buttonTitle}
+            action={action}
           />
         </View>
       </View>
@@ -48,6 +52,14 @@ const styles = StyleSheet.create({
   firstPartWrapper: {
     flex: 0.2,
     justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: -5,
+    marginRight: 5,
+  },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 7,
   },
   secondPartWrapper: {
     flex: 0.6,

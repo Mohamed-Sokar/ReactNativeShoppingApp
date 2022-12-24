@@ -7,6 +7,11 @@ export default function InputField({
   placeholder,
   title,
   keyboardType,
+  onChangeText,
+  onBlur,
+  value,
+  error,
+  usernameRef,
 }) {
   return (
     <>
@@ -18,6 +23,11 @@ export default function InputField({
             placeholder={placeholder}
             keyboardType={keyboardType}
             style={styles.text}
+            onChangeText={onChangeText}
+            onBlur={onBlur}
+            value={value}
+            error={error}
+            ref={usernameRef}
           />
         </View>
       </View>

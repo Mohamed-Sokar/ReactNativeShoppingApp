@@ -27,6 +27,19 @@ export default function HomeStack() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          borderTopWidth: 0,
+          elevation: 0,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: '#fff',
+          height: 60,
+        },
       }}>
       <Tab.Screen
         name="HomeScreen"
@@ -53,6 +66,7 @@ export default function HomeStack() {
           tabBarIcon: ({focused}) =>
             focused ? <ProductsOn /> : <ProductsOff />,
         }}
+        initialParams={{catagoryName: 'All'}}
       />
       <Tab.Screen
         name="CartScreen"
